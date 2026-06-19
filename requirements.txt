@@ -1,4 +1,8 @@
 Flask>=2.0
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
 scikit-learn
 pandas
 gunicorn

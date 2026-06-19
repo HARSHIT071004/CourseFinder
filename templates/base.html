@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CourseFinder{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="nav-logo">COURSE<em>FINDER</em></a>
+        <div class="nav-links">
+            <a href="/" class="nav-link {% if active == 'home' %}active{% endif %}">Home</a>
+            <a href="/recommend" class="nav-link {% if active == 'recommend' %}active{% endif %}">Recommend</a>
+            <a href="/about" class="nav-link {% if active == 'about' %}active{% endif %}">About</a>
+            <a href="/contact" class="nav-link {% if active == 'contact' %}active{% endif %}">Contact</a>
+            <button id="theme-btn" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle theme">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+            </button>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <span>COURSE<em>FINDER</em></span>
+            <p>Content-based course recommendations powered by NLP</p>
+        </div>
+    </footer>
+
+    <script>
+    const ICON_MOON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+    const ICON_SUN  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+    function toggleTheme() {
+        const isLight = document.body.classList.toggle('light-theme');
+        document.getElementById('theme-btn').innerHTML = isLight ? ICON_SUN : ICON_MOON;
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+    (function() {
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light-theme');
+            document.getElementById('theme-btn').innerHTML = ICON_SUN;
+        }
+    })();
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

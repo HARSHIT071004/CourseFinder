@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Recommend — CourseFinder{% endblock %}
+{% block content %}
+<section class="recommend-page">
+    <div class="recommend-header">
+        <h1>Course Recommendations</h1>
+        <p>Search for a course and we will find the 5 most similar matches.</p>
+    </div>
+
+    <div class="search-wrapper">
+        <div class="search-bar" id="search-bar">
+            <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="search-input" placeholder="Type to search courses..." autocomplete="off" />
+            <button class="btn btn-primary search-btn" id="recommend-btn" onclick="getRecommendations()">Recommend</button>
+        </div>
+        <div class="search-dropdown" id="search-dropdown"></div>
+    </div>
+
+    <div id="recommendations" class="recommendations-grid"></div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let allCourses = [];
+let selectedCourse = '';
+let activeIndex = -1;
+
+async function loadCourses() {
+    try {
+        const res = await fetch('/api/courses');
+        const data = await res.json();
+        allCourses = data.courses;
+    } catch (err) {
+        console.error("Error loading courses:", err);
+    }
+}
+
+function filterCourses(query) {
+    if (!query) return [];
+    const q = query.toLowerCase();
+    return allCourses.filter(c => c.toLowerCase().includes(q)).slice(0, 12);
+}
+
+function showDropdown(items) {
+    const dd = document.getElementById('search-dropdown');
+    if (!items.length) {
+        dd.classList.remove('visible');
+        return;
+    }
+    dd.innerHTML = items.map((c, i) =>
+        `<div class="dropdown-item" data-index="${i}" onmousedown="selectCourse('${c.replace(/'/g, "\\'")}')">${highlight(c, document.getElementById('search-input').value)}</div>`
+    ).join('');
+    dd.classList.add('visible');
+    activeIndex = -1;
+}
+
+function highlight(text, query) {
+    if (!query) return text;
+    const idx = text.toLowerCase().indexOf(query.toLowerCase());
+    if (idx === -1) return text;
+    return text.slice(0, idx) + '<mark>' + text.slice(idx, idx + query.length) + '</mark>' + text.slice(idx + query.length);
+}
+
+function selectCourse(name) {
+    selectedCourse = name;
+    document.getElementById('search-input').value = name;
+    document.getElementById('search-dropdown').classList.remove('visible');
+}
+
+function hideDropdown() {
+    setTimeout(() => {
+        document.getElementById('search-dropdown').classList.remove('visible');
+    }, 200);
+}
+
+async function getRecommendations() {
+    const course_name = selectedCourse || document.getElementById('search-input').value;
+    if (!course_name) return;
+
+    const container = document.getElementById('recommendations');
+    container.innerHTML = '<div class="loading">Loading recommendations...</div>';
+    document.getElementById('search-dropdown').classList.remove('visible');
+
+    try {
+        const res = await fetch('/api/recommend', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({course_name})
+        });
+        const data = await res.json();
+        container.innerHTML = '';
+        data.recommendations.forEach((r, i) => {
+            const fullUrl = r.url.startsWith('http') ? r.url : `https://www.udemy.com${r.url}`;
+            const score = Math.round(r.score * 100);
+            const div = document.createElement('div');
+            div.classList.add('course-card');
+            div.style.animationDelay = `${i * 0.06}s`;
+            div.innerHTML = `
+                <img src="${r.image}" alt="${r.title}" class="course-img" loading="lazy"/>
+                <div class="course-info">
+                    <div class="course-score">${score}% match</div>
+                    <h3>${r.title}</h3>
+                    <p>Rating: ${r.rating}</p>
+                    <p>Duration: ${r.duration}</p>
+                    <a href="${fullUrl}" target="_blank" class="btn btn-card">Go to Course</a>
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    } catch (err) {
+        container.innerHTML = '<div class="error">Error fetching recommendations. Please try again.</div>';
+    }
+}
+
+const input = document.getElementById('search-input');
+
+input.addEventListener('input', function() {
+    selectedCourse = '';
+    const items = filterCourses(this.value);
+    showDropdown(items);
+});
+
+input.addEventListener('focus', function() {
+    if (this.value) {
+        const items = filterCourses(this.value);
+        showDropdown(items);
+    }
+});
+
+input.addEventListener('blur', hideDropdown);
+
+input.addEventListener('keydown', function(e) {
+    const dd = document.getElementById('search-dropdown');
+    const items = dd.querySelectorAll('.dropdown-item');
+    if (!items.length) return;
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIndex = Math.min(activeIndex + 1, items.length - 1);
+        items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIndex = Math.max(activeIndex - 1, 0);
+        items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeIndex >= 0 && activeIndex < items.length) {
+            items[activeIndex].dispatchEvent(new Event('mousedown'));
+        } else {
+            getRecommendations();
+        }
+    } else if (e.key === 'Escape') {
+        dd.classList.remove('visible');
+    }
+});
+
+window.onload = loadCourses;
+</script>
+{% endblock %}

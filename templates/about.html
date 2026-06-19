@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}About — CourseFinder{% endblock %}
+{% block content %}
+<section class="about-page">
+    <div class="about-header">
+        <h1>About CourseFinder</h1>
+        <p>A content-based course recommendation system powered by NLP.</p>
+    </div>
+
+    <div class="about-grid">
+        <div class="about-card">
+            <h2>The Problem</h2>
+            <p>With tens of thousands of courses available, finding the right one is overwhelming. Search results are often noisy, and platforms rarely help you discover courses that match what you already enjoy.</p>
+        </div>
+
+        <div class="about-card">
+            <h2>Our Approach</h2>
+            <p>CourseFinder uses content-based filtering. It analyzes course attributes, converts them into TF-IDF feature vectors, and computes cosine similarity between every pair. The result: precise, data-driven recommendations.</p>
+        </div>
+
+        <div class="about-card">
+            <h2>The Stack</h2>
+            <ul class="tech-list">
+                <li><strong>Flask</strong> &mdash; lightweight Python web framework</li>
+                <li><strong>scikit-learn</strong> &mdash; TfidfVectorizer and cosine_similarity</li>
+                <li><strong>pandas</strong> &mdash; data loading and manipulation</li>
+                <li><strong>Vanilla JS</strong> &mdash; no framework overhead</li>
+            </ul>
+        </div>
+
+        <div class="about-card">
+            <h2>NLP Explained</h2>
+            <p><strong>TF-IDF</strong> measures how important a word is to a course relative to the entire catalog. Rare, specific terms score higher than common words. <strong>Cosine similarity</strong> then measures how close two courses are in this vector space.</p>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat">
+            <span class="stat-num">83K+</span>
+            <span class="stat-label">Courses in Dataset</span>
+        </div>
+        <div class="stat">
+            <span class="stat-num">2,000</span>
+            <span class="stat-label">Active Courses</span>
+        </div>
+        <div class="stat">
+            <span class="stat-num">~32MB</span>
+            <span class="stat-label">Similarity Matrix</span>
+        </div>
+        <div class="stat">
+            <span class="stat-num">&lt;50ms</span>
+            <span class="stat-label">Recommendation Time</span>
+        </div>
+    </div>
+</section>
+{% endblock %}
