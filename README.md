@@ -1,8 +1,6 @@
-# Course Recommender
+# CourseFinder
 
-A Python Flask web application that recommends courses based on user preferences. Built with `Flask`, `pandas`, and `scikit-learn`.  
-
-This project is designed to provide personalized course suggestions in a simple web interface.
+A content-based course recommendation system built with FastAPI, scikit-learn, and NLP. Select a course you love and discover the 5 most similar courses using TF-IDF vectorization and cosine similarity.
 
 ---
 
@@ -13,8 +11,8 @@ This project is designed to provide personalized course suggestions in a simple 
 - [Installation](#installation)
 - [Usage](#usage)
 - [Deployment on Render](#deployment-on-render)
-- [Technologies](#technologies)
-- [Folder Structure](#folder-structure)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -22,10 +20,12 @@ This project is designed to provide personalized course suggestions in a simple 
 
 ## Features
 
-- Recommend courses based on user input.
-- Simple, responsive web interface.
-- Powered by `pandas` and `scikit-learn` for data processing and ML logic.
-- Easy deployment to cloud platforms like Render.
+- Search-based course selection with real-time filtering and keyboard navigation
+- Top 5 NLP-powered recommendations ranked by cosine similarity score
+- Multi-page layout: Home, Recommend, About, Contact
+- Dark/light theme toggle with localStorage persistence
+- Responsive monochrome design, no external UI frameworks
+- Instant results via precomputed similarity matrix
 
 ---
 
@@ -42,99 +42,109 @@ Clone the repository:
 ```bash
 git clone https://github.com/HARSHIT071004/Course-recommender.git
 cd Course-recommender
+```
+
 Create a virtual environment and activate it:
 
-bash
-Copy code
-python3 -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+```bash
+python -m venv venv
+source venv/bin/activate   # Linux/Mac
+venv\Scripts\activate      # Windows
+```
+
 Install dependencies:
 
-bash
-Copy code
+```bash
 pip install -r requirements.txt
-Usage
-Run the Flask app locally:
+```
 
-bash
-Copy code
-python app.py
-Or using gunicorn for production:
+---
 
-bash
-Copy code
-gunicorn app:app
-Open your browser and go to:
+## Usage
 
-cpp
-Copy code
-http://127.0.0.1:5000
-Deployment on Render
-Make sure requirements.txt contains:
+Run the development server:
 
-shell
-Copy code
-Flask>=2.0
+```bash
+python -m uvicorn app:app --host 127.0.0.1 --port 5000 --reload
+```
+
+Or without reload:
+
+```bash
+python -m uvicorn app:app --host 127.0.0.1 --port 5000
+```
+
+Open your browser at [http://127.0.0.1:5000](http://127.0.0.1:5000).
+
+---
+
+## Deployment on Render
+
+Ensure `requirements.txt` contains:
+
+```
+fastapi
+uvicorn[standard]
+jinja2
+python-multipart
 scikit-learn
 pandas
 gunicorn
-Push all changes to GitHub:
+```
 
-bash
-Copy code
-git add .
-git commit -m "Prepare for deployment"
-git push origin main
 On Render:
 
-Create a New Web Service.
+1. Create a New Web Service
+2. Select Python 3 as environment
+3. Connect your GitHub repo
+4. Branch: `main`
+5. Build Command: `pip install -r requirements.txt`
+6. Start Command: `gunicorn app:app`
+7. Deploy
 
-Select Python 3 as environment.
+---
 
-Connect your GitHub repo (Course-recommender).
+## Tech Stack
 
-Branch: main.
+- **FastAPI** — async Python web framework
+- **uvicorn** — ASGI server
+- **scikit-learn** — TfidfVectorizer, cosine_similarity
+- **pandas** — data loading and manipulation
+- **Jinja2** — template rendering
+- **Vanilla JS** — no framework, no build step
 
-Build Command: pip install -r requirements.txt
+---
 
-Start Command: gunicorn app:app
+## Project Structure
 
-Deploy the service.
+```
+Course-Recommender-NLP/
+├── app.py                 # FastAPI routes and server entry point
+├── model.py               # CourseRecommender class (TF-IDF + similarity)
+├── requirements.txt       # Python dependencies
+├── data/
+│   └── courses.csv        # Udemy course dataset (11 columns)
+├── static/
+│   └── style.css          # Monochrome design system with dark/light themes
+└── templates/
+    ├── base.html           # Shared layout (nav, theme toggle, footer)
+    ├── home.html           # Hero, features, how-it-works
+    ├── recommend.html      # Search bar + recommendation grid
+    ├── about.html          # Project info, tech stack, stats
+    └── contact.html        # Contact form
+```
 
-After successful deployment, visit your live URL.
+---
 
-Technologies
-Python 3
+## Contributing
 
-Flask
+1. Fork the repository
+2. Create a new branch
+3. Make your changes
+4. Submit a Pull Request
 
-pandas
+---
 
-scikit-learn
+By Harshit Sharma
 
-gunicorn (for production deployment)
-
-Folder Structure
-csharp
-Copy code
-Course-recommender/
-│
-├── app.py               # Main Flask app
-├── templates/           # HTML templates
-├── static/              # CSS, JS, images
-├── requirements.txt     # Dependencies
-└── README.md
-Contributing
-Contributions are welcome!
-
-Fork the repository
-
-Create a new branch
-
-Make your changes
-
-Submit a Pull Request
-By- Harshit Sharma
-License
 This project is licensed under the MIT License.
